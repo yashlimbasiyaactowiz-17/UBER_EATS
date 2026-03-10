@@ -1,17 +1,21 @@
 import mysql.connector
+import threading
 
-conn = None
+_local = threading.local()
+
+DB_CONFIG = dict(
+    host="localhost",
+    user="root",
+    password="actowiz",
+    database="ubereats",
+    port=3306
+)
 
 def connect():
-    global conn
+    conn = getattr(_local, "conn", None)
     if conn is None or not conn.is_connected():
-        conn = mysql.connector.connect(
-            host="localhost",
-            user="root",
-            password="actowiz",
-            database="ubereats"
-        )
-    return conn
+        _local.conn = mysql.connector.connect(**DB_CONFIG)
+    return _local.conn
 
 def create(table_name: str):
     query = f"""
@@ -40,6 +44,7 @@ def create(table_name: str):
     cursor = conn.cursor()
     cursor.execute(query)
     conn.commit()
+    cursor.close()
 
 def insert_into_db(table_name: str, data: dict):
     cols = ",".join(list(data.keys()))
@@ -49,8 +54,9 @@ def insert_into_db(table_name: str, data: dict):
     cursor = conn.cursor()
     cursor.execute(query, tuple(data.values()))
     conn.commit()
+    cursor.close()
 
-def batch_insert(table_name: str, rows: list[dict]):
+def batch_insert(table_name: str, rows: list):
     if not rows:
         return
     rows = [r for r in rows if r.get("restarent_id") is not None]
@@ -61,8 +67,15 @@ def batch_insert(table_name: str, rows: list[dict]):
     query = f"""INSERT IGNORE INTO {table_name} ({cols}) VALUES ({vals})"""
     conn = connect()
     cursor = conn.cursor()
-    cursor.executemany(query, [tuple(r.values()) for r in rows])
-    conn.commit()
+    try:
+        cursor.executemany(query, [tuple(r.values()) for r in rows])
+        conn.commit()
+    except Exception as e:
+        conn.rollback()
+        print(f"[DB ERROR] {e}")
+    finally:
+        cursor.close()
 
 if __name__ == "__main__":
     connect()
+    print("DB connection OK")

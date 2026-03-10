@@ -1,0 +1,16 @@
+start python parsel.py 1 8126
+start python parsel.py 8126 16251
+start python parsel.py 16251 24376
+start python parsel.py 24376 32501
+start python parsel.py 32501 40626
+start python parsel.py 40626 48751
+start python parsel.py 48751 56876
+start python parsel.py 56876 65001
+start python parsel.py 65001 73126
+start python parsel.py 73126 81251
+start python parsel.py 81251 89376
+start python parsel.py 89376 97501
+start python parsel.py 97501 105626
+start python parsel.py 105626 113751
+start python parsel.py 113751 121876
+start python parsel.py 121876 130001
