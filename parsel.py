@@ -32,11 +32,11 @@ def parse(json_data: dict):
     data_path = json_data.get('data', {})
 
    
-    result['restarent_id']    = data_path.get('uuid')
+    result['restarent_id'] = data_path.get('uuid')
     result['restaurant_name'] = data_path.get('title')
-    result['slug']            = data_path.get('slug')
-    result['phone_number']    = data_path.get('phoneNumber')
-    result['open_or_close']   = 1 if data_path.get('isOpen') else 0
+    result['slug'] = data_path.get('slug')
+    result['phone_number']  = data_path.get('phoneNumber')
+    result['open_or_close']  = 1 if data_path.get('isOpen') else 0
 
   
     parsed_hours = []
@@ -44,13 +44,13 @@ def parse(json_data: dict):
         section_hours = []
         for s in (h.get('sectionHours') or []):
             section_hours.append({
-                "startTime":    round(s.get('startTime', 0) / 60, 2),
-                "endTime":      round(s.get('endTime',   0) / 60, 2),
+                "startTime":  round(s.get('startTime', 0) / 60, 2),
+                "endTime": round(s.get('endTime',   0) / 60, 2),
                 "sectionTitle": s.get('sectionTitle')
             })
         parsed_hours.append({
             "dayRange": h.get('dayRange'),
-            "hours":    section_hours
+            "hours": section_hours
         })
     result['hours'] = json.dumps(parsed_hours, ensure_ascii=False)
 
@@ -61,10 +61,10 @@ def parse(json_data: dict):
 
     loc = data_path.get('location') or {}
     result['street_address'] = loc.get('streetAddress')
-    result['city']           = loc.get('city')
-    result['country']        = loc.get('country')
-    result['postalcode']     = loc.get('postalCode')
-    result['region']         = loc.get('region')
+    result['city']  = loc.get('city')
+    result['country']  = loc.get('country')
+    result['postalcode'] = loc.get('postalCode')
+    result['region'] = loc.get('region')
     result['location_type']  = loc.get('locationType')
 
     eta = data_path.get('etaRange') or {}
@@ -85,14 +85,14 @@ def parse(json_data: dict):
 
             for item in (sip.get('catalogItems') or []):
                 categori['items'].append({
-                    'id':               item.get('uuid'),
-                    'title':            item.get('title'),
+                    'id': item.get('uuid'),
+                    'title': item.get('title'),
                     'item_description': item.get('itemDescription'),
-                    'price':            item.get('price'),        # cents e.g. 5200 → $52.00
-                    'price_text':       (item.get('priceTagline') or {}).get('text'),
-                    'item_image':       item.get('imageUrl'),
-                    'is_available':     item.get('isAvailable'),
-                    'is_sold_out':      item.get('isSoldOut'),
+                    'price':  item.get('price'),        # cents e.g. 5200 → $52.00
+                    'price_text': (item.get('priceTagline') or {}).get('text'),
+                    'item_image':  item.get('imageUrl'),
+                    'is_available': item.get('isAvailable'),
+                    'is_sold_out':   item.get('isSoldOut'),
                 })
 
             cate_list.append(categori)
